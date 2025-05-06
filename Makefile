@@ -27,6 +27,9 @@
 # Toplevel HSS Makefile
 #
 
+
+
+
 SHELL=/bin/sh
 
 BINDIR=build
@@ -49,9 +52,9 @@ ifneq ("$(wildcard boards/${BOARD}/Makefile)","")
   include boards/${BOARD}/Makefile
 else
   ifndef BOARD
-    BOARD:=mpfs-icicle-kit-es
+    BOARD:=mpfs-upi-space
     export BOARD
-    $(info INFO: BOARD not specified, defaulting to ${BOARD}) # default to icicle if nothing found
+    $(info INFO: BOARD not specified, defaulting to ${BOARD}) # default to mpfs-upi-space if nothing found
     include boards/${BOARD}/Makefile
   else
     $(error Board >>${BOARD}<< not found)
@@ -100,6 +103,8 @@ endif
 
 include envm-wrapper/Makefile
 
+
+
 ################################################################################################
 #
 # Main Build Targets
@@ -111,15 +116,26 @@ EXTRA_OBJS-envm = $(EXTRA_OBJS)
 OBJS-l2scratch = $(OBJS)
 EXTRA_OBJS-l2scratch = $(EXTRA_OBJS)
 
+#define main-build-target
+#	$(ECHO) " LD        $@";
+#	$(CC) -T $(LINKER_SCRIPT-$(1)) $(CFLAGS_GCCEXT) $(OPT-y) \
+#		 -static -nostdlib -nostartfiles -nodefaultlibs \
+#		 -Wl,--build-id -Wl,-Map=$(BINDIR)/output-$(1).map -Wl,--gc-sections \
+#		 -o $(BINDIR)/$@ $(OBJS-$(1)) $(EXTRA_OBJS-$(1)) $(LIBS) $(LIBS-y)
+#	$(ECHO) " NM        `basename $@ .elf`.sym";
+#	$(NM) -n $(BINDIR)/$@ > $(BINDIR)/`basename $@ .elf`.sym
+#endef
+
 define main-build-target
-	$(ECHO) " LD        $@";
-	$(CC) -T $(LINKER_SCRIPT-$(1)) $(CFLAGS_GCCEXT) $(OPT-y) \
-		 -static -nostdlib -nostartfiles -nodefaultlibs \
-		 -Wl,--build-id -Wl,-Map=$(BINDIR)/output-$(1).map -Wl,--gc-sections \
-		 -o $(BINDIR)/$@ $(OBJS-$(1)) $(EXTRA_OBJS-$(1)) $(LIBS) $(LIBS-y)
-	$(ECHO) " NM        `basename $@ .elf`.sym";
-	$(NM) -n $(BINDIR)/$@ > $(BINDIR)/`basename $@ .elf`.sym
+	$(ECHO) " LD        $@"
+	$(CC) -T "$(LINKER_SCRIPT-$(1))" $(CFLAGS_GCCEXT) $(OPT-y) \
+		-static -nostdlib -nostartfiles -nodefaultlibs \
+		-Wl,--build-id -Wl,-Map="$(BINDIR)/output-$(1).map" -Wl,--gc-sections \
+		-o "$(BINDIR)/$@" $(OBJS-$(1)) $(EXTRA_OBJS-$(1)) "$(LIBS)" "$(LIBS-y)"
+	$(ECHO) " NM        `basename $@ .elf`.sym"
+	$(NM) -n "$(BINDIR)/$@" > "$(BINDIR)/`basename $@ .elf`.sym"
 endef
+
 
 #
 # Build Targets

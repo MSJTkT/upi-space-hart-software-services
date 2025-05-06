@@ -28,9 +28,9 @@
 #
 
 #
-# BeagleV-Fire
+# upi-space
 #
-$(info mpfs-beaglev-fire selected)
+$(info mpfs-upi-space selected)
 
 PACKAGE=FCVG484
 DIE=MPFS025T
@@ -42,7 +42,7 @@ TARGET:=$(RISCV_TARGET)
 
 LINKER_SCRIPT-l2scratch=boards/${BOARD}/hss-l2scratch.ld
 
-BOARD_DIR=boards/mpfs-beaglev-fire
+BOARD_DIR=boards/mpfs-upi-space
 
 INCLUDES += \
 	-I$(BOARD_DIR)/mpfs_hal_config/ \
